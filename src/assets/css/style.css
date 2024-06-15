@@ -1,0 +1,15 @@
+@font-face {
+    font-family: 'ALJAZEERA';
+    src: url('../fonts/AL-JAZEERA-ARABIC-REGULAR.TTF') format('truetype'),
+         url('../fonts/AL-JAZEERA-ARABIC-REGULAR.TTF') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  p{
+    font-family: 'TajawalRegular', sans-serif !important;
+  }
+
+ div h5{
+    font-family: 'HacenSamra', sans-serif !important;
+  }

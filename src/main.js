@@ -20,11 +20,10 @@ import router from "./router";
 
 import "./assets/css/nucleo-icons.css";
 import "./assets/css/nucleo-svg.css";
-
+import Notifications from '@kyvg/vue3-notification';
 import "./assets/css/theme.min.css";
 import "./assets/css/user-rtl.min.css";
 import "./assets/css/user.min.css";
-
 
 
 
@@ -36,8 +35,10 @@ import 'element-plus/dist/index.css'
 import 'element-plus/es/components/message/style/css'
 const appInstance = createApp(App);
 
+
 appInstance.use(store);
 appInstance.use(router);
+appInstance.use(Notifications);
 appInstance.use(ElementPlus, { size: 'small', zIndex: 3000 })
 appInstance.use(SoftUIDashboard);
 appInstance.mount("#app");

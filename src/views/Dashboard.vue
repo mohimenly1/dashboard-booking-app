@@ -1,43 +1,29 @@
 <template>
   <div class="py-4 container-fluid">
     <div class="row">
-      <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-        <mini-statistics-card
-          title="الارادات اليومية"
-          value="$53,000"
-          :percentage="{
-            value: '+505%',
-            color: 'text-success',
-          }"
-          :icon="{
-            component: 'ni ni-money-coins',
-            background: iconBackground,
-          }"
-          direction-reverse
-        />
-      </div>
-      <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+      <notifications position="top left" classes="my-custom-class" />
+      <div v-if="statisticsLoaded" class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
         <mini-statistics-card
           title="اجمالي الحجوزات"
-          value="2,300"
+          :value="totalReservations"
           :percentage="{
-            value: '+3%',
-            color: 'text-success',
+            value: `+${totalReservationsPercentage}%`,
+            color: totalReservationsPercentage >= 0 ? 'text-success' : 'text-danger',
           }"
           :icon="{
-            component: ' ni ni-world',
+            component: 'ni ni-world',
             background: iconBackground,
           }"
           direction-reverse
         />
       </div>
-      <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+      <div v-if="statisticsLoaded" class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
         <mini-statistics-card
           title="حجوزات قيد الانتظار"
-          value="+3,462"
+          :value="pendingReservations"
           :percentage="{
-            value: '-2%',
-            color: 'text-danger',
+            value: `+${pendingReservationsPercentage}%`,
+            color: pendingReservationsPercentage >= 0 ? 'text-success' : 'text-danger',
           }"
           :icon="{
             component: 'ni ni-paper-diploma',
@@ -46,20 +32,38 @@
           direction-reverse
         />
       </div>
-      <div class="col-xl-3 col-sm-6 mb-xl-0">
+      <div v-if="statisticsLoaded" class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
         <mini-statistics-card
-          title="الاجمالي"
-          value="$103,430"
+          title="الحجوزات المؤكدة"
+          :value="confirmedReservations"
           :percentage="{
-            value: '+5%',
-            color: 'text-success',
+            value: `+${confirmedReservationsPercentage}%`,
+            color: confirmedReservationsPercentage >= 0 ? 'text-success' : 'text-danger',
           }"
           :icon="{
-            component: 'ni ni-cart',
+            component: 'ni ni-check-bold',
             background: iconBackground,
           }"
           direction-reverse
         />
+      </div>
+      <div v-if="statisticsLoaded" class="col-xl-3 col-sm-6 mb-xl-0">
+        <mini-statistics-card
+          title="الحجوزات الملغاة"
+          :value="canceledReservations"
+          :percentage="{
+            value: `+${canceledReservationsPercentage}%`,
+            color: canceledReservationsPercentage >= 0 ? 'text-success' : 'text-danger',
+          }"
+          :icon="{
+            component: 'ni ni-fat-remove',
+            background: iconBackground,
+          }"
+          direction-reverse
+        />
+      </div>
+      <div v-if="!statisticsLoaded" class="col-12 text-center">
+        <p>Loading...</p>
       </div>
     </div>
     <div class="row">
@@ -237,8 +241,10 @@
 import MiniStatisticsCard from "@/examples/Cards/MiniStatisticsCard.vue";
 import ReportsBarChart from "@/examples/Charts/ReportsBarChart.vue";
 import GradientLineChart from "@/examples/Charts/GradientLineChart.vue";
+import { notify } from "@kyvg/vue3-notification";
+import  Echo  from "../echo";
 
-
+import api from "@/api.js";
 import US from "../assets/img/icons/flags/US.png";
 import DE from "../assets/img/icons/flags/DE.png";
 import GB from "../assets/img/icons/flags/GB.png";
@@ -249,6 +255,10 @@ import {
   faCreditCard,
   faScrewdriverWrench,
 } from "@fortawesome/free-solid-svg-icons";
+
+
+
+
 export default {
   name: "dashboard-default",
   data() {
@@ -258,6 +268,15 @@ export default {
       faScrewdriverWrench,
       faUsers,
       faHandPointer,
+      statisticsLoaded: false,
+      totalReservations: 0,
+      pendingReservations: 0,
+      confirmedReservations: 0,
+      canceledReservations: 0,
+      totalReservationsPercentage: 0,
+      pendingReservationsPercentage: 0,
+      confirmedReservationsPercentage: 0,
+      canceledReservationsPercentage: 0,
       sales: {
         us: {
           country: "United States",
@@ -297,14 +316,66 @@ export default {
   
 
   },
+  methods:{
+    notifyy(notification="") {
+      // Add your notification logic here
+      console.log(notification.title, notification.text, notification.type);
+    }
+  },
+  async mounted() {
+    
+   // const channel = pusher.subscribe('private-reservations');
+    console.log(this.notifyy())
+    Echo.private('item-channel')
+            .listen('ItemCreated', (event) => {
+                console.log('Received', event);
+                notify({
+                    title: 'New Reservation',
+                    text: `Reservation created with ID: ${event.reservation.id}`,
+                    type: 'success'
+                });
+            });
 
-  beforeMount() {
+
+
+
+        Echo.connector.pusher.connection.bind('connected', () => {
+            console.log('Pusher connected');
+        });
+
+        Echo.connector.pusher.connection.bind('error', (err) => {
+            console.error('Pusher error:', err);
+        });
+
+        Echo.connector.pusher.connection.bind('state_change', (states) => {
+            console.log('Pusher state change:', states);
+        });
     this.$store.state.isRTL = true;
     document.querySelector("html").setAttribute("lang", "ar");
     document.querySelector("html").setAttribute("dir", "rtl");
     document.querySelector("#app").classList.add("rtl");
+
+    try {
+      const response = await api.get('/get-status-reservations');
+      this.totalReservations = response.data.total_reservations || 0;
+      this.pendingReservations = response.data.pending_reservations || 0;
+      this.confirmedReservations = response.data.confirmed_reservations || 0;
+      this.canceledReservations = response.data.canceled_reservations || 0;
+
+      // Calculate percentages
+      const total = this.totalReservations;
+      this.totalReservationsPercentage = total !== 0 ? ((total - total) / total) * 100 : 0;
+      this.pendingReservationsPercentage = total !== 0 ? ((total - this.pendingReservations) / total) * 100 : 0;
+      this.confirmedReservationsPercentage = total !== 0 ? ((total - this.confirmedReservations) / total) * 100 : 0;
+      this.canceledReservationsPercentage = total !== 0 ? ((total - this.canceledReservations) / total) * 100 : 0;
+
+      this.statisticsLoaded = true;
+    } catch (error) {
+      console.error('Failed to fetch statistics:', error);
+    }
   },
   beforeUnmount() {
+
     this.$store.state.isRTL = true;
     document.querySelector("html").removeAttribute("lang");
     document.querySelector("html").removeAttribute("dir");
@@ -312,3 +383,11 @@ export default {
   },
 };
 </script>
+
+
+<style scoped>
+.my-custom-class{
+  width: 100px;
+  height: 100px;
+}
+</style>

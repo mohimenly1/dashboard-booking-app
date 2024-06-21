@@ -1,6 +1,7 @@
 <template>
   <nav
-    class="shadow-none navbar navbar-main navbar-expand-lg border-radius-xl"
+  
+    class="z-index-sticky shadow-none navbar navbar-main navbar-expand-lg border-radius-xl"
     v-bind="$attrs"
     id="navbarBlur"
     data-scroll="true"

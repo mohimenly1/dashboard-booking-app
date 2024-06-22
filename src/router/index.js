@@ -16,6 +16,7 @@ import ContactUs from "@/views/ContactUs.vue";
 import Playground from "@/views/Playgrounds/Playgrounds.vue";
 import EditPlayground from "@/views/Playgrounds/EditPlayground.vue";
 import AddPlayground from "@/views/Playgrounds/AddPlayground.vue";
+import Booking from "@/views/Booking/Booking.vue";
 import store from '@/store';
 
 const routes = [
@@ -26,6 +27,7 @@ const routes = [
   { path: '/community', name: 'Community', component: Community },
   { path: '/contact', name: 'ContactUs', component: ContactUs },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard, meta: { requiresAuth: true } },
+  { path: '/bookings', name: 'Booking', component: Booking, meta: { requiresAuth: true } },
   { path: '/tables', name: 'Tables', component: Tables, meta: { requiresAuth: true } },
   { path: '/billing', name: 'Billing', component: Billing, meta: { requiresAuth: true } },
   { path: '/playground', name: 'Playgrounds', component: Playground, meta: { requiresAuth: true } },

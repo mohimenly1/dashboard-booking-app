@@ -41,4 +41,22 @@ export const updatePlayground = async (id, data) => {
   return response.data;
 };
 
+
+
+export const fetchOwnerReservations = async () => {
+  const response = await api.get('/owner-reservations');
+  return response.data;
+};
+
+export const confirmReservation = async (id) => {
+  const response = await api.patch(`/reservations/${id}/confirm`);
+  return response.data;
+};
+
+export const cancelReservation = async (id) => {
+  const response = await api.patch(`/reservations/${id}/cancel`);
+  return response.data;
+};
+
+
 export default api;

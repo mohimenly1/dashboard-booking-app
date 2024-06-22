@@ -20,6 +20,13 @@
           </sidenav-collapse>
         </li>
         <li class="nav-item">
+          <sidenav-collapse navText="الحجوزات" :to="{ name: 'Booking' }">
+            <template #icon>
+              <Booking />
+            </template>
+          </sidenav-collapse>
+        </li>
+        <li class="nav-item">
           <sidenav-collapse navText="الجداول" :to="{ name: 'Tables' }">
             <template #icon>
               <office />
@@ -83,6 +90,7 @@ import SidenavCard from "./SidenavCard.vue";
 import Shop from "../../components/Icon/Shop.vue";
 import Office from "../../components/Icon/Office.vue";
 import Soccer from "../../components/Icon/Soccer.vue";
+import Booking from "../../components/Icon/Booking.vue";
 import CreditCard from "../../components/Icon/CreditCard.vue";
 import CustomerSupport from "../../components/Icon/CustomerSupport.vue";
 import { mapActions } from 'vuex';
@@ -107,6 +115,7 @@ export default {
     Soccer,
     CreditCard,
     CustomerSupport,
+    Booking
   },
   methods: {
     ...mapActions(['logout']),

@@ -1,7 +1,7 @@
 // store/index.js
 import { createStore } from "vuex";
 import bootstrap from "bootstrap/dist/js/bootstrap.min.js";
-import { login, logout,fetchPlaygrounds,updatePlayground   } from '@/api';
+import { login, logout,fetchPlaygrounds,updatePlayground ,register  } from '@/api';
 
 export default createStore({
   state: {
@@ -98,6 +98,10 @@ export default createStore({
     },
     async login({ commit }, credentials) {
       const { access_token } = await login(credentials.phone, credentials.password);
+      commit('SET_AUTH', access_token);
+    },
+    async register({ commit }, credentials) {
+      const { access_token } = await register(credentials.phone, credentials.password, credentials.password_confirmation);
       commit('SET_AUTH', access_token);
     },
     async logout({ commit }) {

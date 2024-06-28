@@ -22,6 +22,10 @@ export const login = async (phone, password) => {
   const response = await api.post('/login', { phone, password });
   return response.data;
 };
+export const register = async (phone, password, password_confirmation) => {
+  const response = await api.post('/register', { phone, password,password_confirmation });
+  return response.data;
+};
 
 export const logout = async () => {
   const response = await api.post('/logout');

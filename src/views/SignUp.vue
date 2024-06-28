@@ -52,13 +52,13 @@
                   <p class="mb-0">ادخل رقم هاتفك وكلمة المرور لتسجيل دخولك</p>
                 </div>
                 <div class="card-body">
-                  <form @submit.prevent="handleLogin" role="form" class="text-end">
+                  <form @submit.prevent="handleregister" role="form" class="text-end">
                     <label >رقم الهاتف</label>
-                    <soft-input v-model="phone" type="text" placeholder="رقم الهاتف" />
+                    <input v-model="phone" type="text" placeholder="رقم الهاتف" />
                     <label>كلمة المرور</label>
-                    <soft-input v-model="password" type="password" placeholder="كلمة المرور" />
+                    <input v-model="password" type="password" placeholder="كلمة المرور" />
                     <label>تأكيد كلمة المرور</label>
-                    <soft-input v-model="password" type="password" placeholder="أعد كتابة كلمة المرور" />
+                    <input v-model="password_confirmation" type="password" placeholder="أعد كتابة كلمة المرور" />
                    
                     <div class="text-center">
                       <soft-button class="my-4 mb-2" variant="gradient" color="success" full-width>إشترك الأن</soft-button>
@@ -84,7 +84,7 @@
 <script>
 
 import AppFooter from "@/examples/PageLayout/Footer.vue";
-import SoftInput from "@/components/SoftInput.vue";
+
 
 import SoftButton from "@/components/SoftButton.vue";
 import { mapActions, mapGetters } from 'vuex';
@@ -94,7 +94,7 @@ export default {
   components: {
 
     AppFooter,
-    SoftInput,
+
 
     SoftButton,
   },
@@ -102,18 +102,19 @@ export default {
     return {
       phone: '',
       password: '',
+      password_confirmation: '',
       rememberMe: false,
     };
   },
   methods: {
-    ...mapActions(['login']),
-    async handleLogin() {
+    ...mapActions(['register']),
+    async handleregister() {
       try {
-        await this.login({ phone: this.phone, password: this.password });
+        await this.register({ phone: this.phone, password: this.password, password_confirmation: this.password_confirmation });
         this.$router.push({ name: 'Dashboard' });
       } catch (error) {
-        console.error('Login failed', error);
-        alert('Login failed. Please check your credentials and try again.');
+        console.error('register failed', error);
+        alert('register failed. Please check your credentials and try again.');
       }
     },
   },
@@ -121,7 +122,7 @@ export default {
     ...mapGetters(['showNavbar', 'showFooter']),
   },
   created() {
-    this.$store.commit('LOGOUT'); // Ensure components are hidden on the login page
+    this.$store.commit('LOGOUT'); // Ensure components are hidden on the register page
   },
 };
 </script>
